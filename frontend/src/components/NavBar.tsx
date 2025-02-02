@@ -3,6 +3,7 @@ import "@rnwonder/solid-date-picker/dist/style.css";
 import { createEffect, createSignal, onMount } from "solid-js";
 import { DatePickerComponent as DatePicker } from "./DatePicker";
 import { useSearchParams } from "@solidjs/router";
+import { dateToMeetupDate } from "~/utils";
 import { SearchBar } from "./SearchBar";
 import log from "~/logger";
 
@@ -21,38 +22,30 @@ export default function () {
     let endDateParam = searchParams.endDate as string;
 
     if (startDateParam || endDateParam) {
-      log.info(`Found existing start / end date in query param:`);
-      log.info(`Start date: ${startDateParam}`);
-      log.info(`End date: ${endDateParam}`);
+      log.info(`Found existing start / end date in query param`);
+      startDateParam = startDateParam.slice(0, startDateParam.indexOf("["));
+      endDateParam = endDateParam.slice(0, endDateParam.indexOf("["));
       setDatePickerValue([new Date(startDateParam), new Date(endDateParam)]);
     } else {
-      log.info(
-        "No query params found. Setting initial date picker value to current date:",
-      );
-      const startDate = new Date();
-      const endDate = new Date();
-      startDate.setHours(1, 0);
-      endDate.setHours(23, 59);
-
-      log.info(`Start date: ${startDate}`);
-      log.info(`End date: ${endDate}`);
-      setDatePickerValue([startDate, endDate]);
+      setDatePickerValue([new Date(), new Date()]);
     }
   });
 
   // On every date picker selection, update the query param with the new selected value
   createEffect(() => {
     const [startDate, endDate] = datePickerValue();
-    const startDateParam = startDate.toLocaleString();
-    const endDateParam = endDate.toLocaleString();
-    log.info(
-      `Setting query params from date picker update: ${startDateParam}, ${endDateParam}`,
-    );
-
-    setSearchParams({
-      startDate: startDateParam,
-      endDate: endDateParam,
-    });
+    if (
+      searchParams.startDate !== dateToMeetupDate(startDate, false) ||
+      searchParams.endDate !== dateToMeetupDate(endDate, true)
+    ) {
+      log.info(
+        `Setting query params: ${dateToMeetupDate(startDate, false)}, ${dateToMeetupDate(endDate, true)}`,
+      );
+      setSearchParams({
+        startDate: dateToMeetupDate(startDate, false),
+        endDate: dateToMeetupDate(endDate, true),
+      });
+    }
   });
 
   return (

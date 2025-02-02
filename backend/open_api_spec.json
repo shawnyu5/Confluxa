@@ -42,8 +42,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           },
           {
@@ -51,8 +50,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           }
         ],
