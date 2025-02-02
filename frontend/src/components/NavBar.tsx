@@ -34,18 +34,16 @@ export default function () {
   // On every date picker selection, update the query param with the new selected value
   createEffect(() => {
     const [startDate, endDate] = datePickerValue();
-    if (
-      searchParams.startDate !== dateToMeetupDate(startDate, false) ||
-      searchParams.endDate !== dateToMeetupDate(endDate, true)
-    ) {
-      log.info(
-        `Setting query params: ${dateToMeetupDate(startDate, false)}, ${dateToMeetupDate(endDate, true)}`,
-      );
-      setSearchParams({
-        startDate: dateToMeetupDate(startDate, false),
-        endDate: dateToMeetupDate(endDate, true),
-      });
-    }
+    const startDateParam = startDate.toString();
+    const endDateParam = endDate.toString();
+    log.info(
+      `Setting query params from date picker update: ${startDateParam}, ${endDateParam}`,
+    );
+
+    setSearchParams({
+      startDate: startDateParam,
+      endDate: endDateParam,
+    });
   });
 
   return (
